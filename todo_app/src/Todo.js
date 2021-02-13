@@ -1,19 +1,57 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './Todo.css';
-import {List, Avatar, ListItem, ListItemAvatar, ListItemText} from '@material-ui/core'; 
+import {List, Avatar, ListItem, ListItemAvatar, ListItemText, Button, Modal} from '@material-ui/core'; 
+import db from './firebase';
+import DeleteForeverOutlinedIcon from '@material-ui/icons/DeleteForeverOutlined';
+import { makeStyles } from '@material-ui/core/styles';
 
-function Todo(props) {
-    return ( 
-        <List className="todo__list">
+const useStyles = makeStyles((theme) => ({
+    paper: {
+        position: 'absolute',
+        width: 400,
+        backgroundColor: theme.palette.background.paper,
+        border: '2px solid #000',
+        boxShadow: theme.shadows[5],
+        padding: theme.spacing(2, 4, 3),
+    },
+}));
+
+    
+    function Todo(props) {
+        const classes = useStyles();
+        const [open, setOpen] = useState(false);
+        const [input, setInput] = useState();
+            
+    
+        const handleOpen = () => {
+            setOpen(true);
+        };
+    
+        const updateTodo = () => {
+            db.collection('todos').doc(props.todo.id).set({
+                todo: input
+            }, { merge: true });
+            setOpen(false);
+        };
+     return ( 
+        <>
+        <Modal open = {open} onclose = {e => setOpen(false)}>
+            <div className={classes.paper}>
+                <input placeholder={props.todo.todo} value={input} onChange={event => setInput(event.target.value)}/>
+                <Button onclick={updateTodo}>Update Todo</Button>
+            </div>
+        </Modal>
+
+        <List>
             <ListItem>
-                <ListItemAvatar>
-                    <Avatar>
-                    </Avatar>
-                </ListItemAvatar>
-                <ListItemText primary={props.text} secondary="deadline"/>
+                
+                <ListItemText primary={props.todo.todo} secondary="deadline"/>
             </ListItem>
+            <Button onClick={e => setOpen(true)}>Edit</Button>
+            <DeleteForeverOutlinedIcon onClick={event => db.collection('todos').doc(props.todo.id).delete()} />
         </List>
-    )
-}
+        </>
+        )
+    }
 
 export default Todo
