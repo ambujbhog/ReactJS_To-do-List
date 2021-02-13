@@ -4,7 +4,7 @@ import {List, Avatar, ListItem, ListItemAvatar, ListItemText} from '@material-ui
 
 function Todo(props) {
     return ( 
-        <List>
+        <List className="todo__list">
             <ListItem>
                 <ListItemAvatar>
                     <Avatar>
